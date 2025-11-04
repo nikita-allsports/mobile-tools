@@ -23,13 +23,18 @@ original_args=("$@")
 FLAVOR=""
 FLAVOR_SUFFIXED="-"
 FLAVOR_DIR="/"
+FLAVOR_SUFFIXED_ARG=""
 
-TEMP=$(getopt -n "$0" -a -l "flavor:" -- -- "$@")
+TEMP=$(getopt -n "$0" -a -l "flavor:,flavor-suffixed:" -- -- "$@")
 eval set -- "$TEMP"
 while [ $# -gt 0 ]; do
 	case "$1" in
 	--flavor)
 		FLAVOR="$2"
+		shift
+		;;
+	--flavor-suffixed)
+		FLAVOR_SUFFIXED_ARG="$2"
 		shift
 		;;
 	--) shift ;;
@@ -39,7 +44,16 @@ done
 
 if [ -n "$FLAVOR" ]; then
 	echo 1>&2 "Passed flavor: $FLAVOR"
+fi
+
+if [ -n "$FLAVOR_SUFFIXED_ARG" ]; then
+	FLAVOR_SUFFIXED="$FLAVOR_SUFFIXED_ARG"
+elif [ -n "$FLAVOR" ]; then
 	FLAVOR_SUFFIXED="-$FLAVOR-"
+fi
+
+if [ -n "$FLAVOR" ]; then
+	echo 1>&2 "Passed flavor: $FLAVOR"
 	FLAVOR_DIR="/$FLAVOR/"
 fi
 # Argument parsing end
